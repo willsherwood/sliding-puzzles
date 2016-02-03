@@ -1,3 +1,6 @@
+package sherwood;
+
+import javafx.event.EventType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -12,12 +15,12 @@ import java.util.stream.Stream;
 public abstract class Board {
 
     private Image image;
-    private ImageView[][] permutation;
+    protected ImageView[][] permutation;
+    protected Point blank;
 
     public final int tileSize;
 
-
-    public abstract Board move(Direction direction, int times);
+    public abstract boolean move(Direction direction, int times);
 
     public Board(int rows, int columns, File file) {
         try {
@@ -32,10 +35,14 @@ public abstract class Board {
                     this.permutation[r][c] = TileFactory.thumb(r, c, this, image);
                     this.permutation[r][c].setX(c * tileSize);
                     this.permutation[r][c].setY(r * tileSize);
+                    this.permutation[r][c].addEventHandler(EventType.ROOT, e -> {
+                        Main.get().focus();
+                    });
                 }).accept(point.row(), point.column()));
+        blank = new Point(rows - 1, columns - 1);
     }
 
-    public Board move(Direction direction) {
+    public boolean move(Direction direction) {
         return move(direction, 1);
     }
 
